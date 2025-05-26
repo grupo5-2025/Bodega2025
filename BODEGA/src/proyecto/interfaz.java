@@ -8,6 +8,9 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 
 import java.awt.Font;
 import javax.swing.JTextField;
@@ -54,9 +57,6 @@ public class interfaz extends JFrame implements ActionListener {
 	private JTextField txtCodconsul;
 	private JTextArea textArea;
 
-	/**
-	 * Launch the application.
-	 */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -69,10 +69,6 @@ public class interfaz extends JFrame implements ActionListener {
 			}
 		});
 	}
-
-	/**
-	 * Create the frame.
-	 */
 	public interfaz() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 1168, 573);
@@ -461,37 +457,64 @@ public class interfaz extends JFrame implements ActionListener {
 	}
 	
 	protected void do_btnIngresarDatos_actionPerformed(ActionEvent e) {
-		clase1 ess=tie.buscar(readcode());
-		if(txtprodu.getText().isBlank()) JOptionPane.showMessageDialog(this, "Por favor ingrese código de producto y cantidad a adquirir");
-		else 
-		{
-		try 
-		{
-			String tam=txtdni.getText();
-			if(tam.length()!=8) 
-			{
-				JOptionPane.showMessageDialog(this, "El número de DNI debe contener 8 dígitos");
-				return;
-			}
-			else {
-				int dni=Integer.parseInt(txtdni.getText());
-		}
-			txtS.setText("");
-			imprimir(" Código de producto: "+ess.getCodigo()+"\n");
-			imprimir("Producto: "+ess.getProducto()+"\n");
-			imprimir("Cantidad adquirida: "+cant()+"\n");
-			imprimir("DNI: "+txtdni.getText()+"\n");
-			imprimir("Stock: "+ess.getStockactual()+"\n");
-			imprimir("Stock restante: "+txtstockrest.getText()+"\n");
-			imprimir("Proveedor: "+ess.getProveedor()+"\n");
-			imprimir("Precio unitario: "+ess.getPreciouni()+"\n");
-			imprimir("Total a pagar: "+txttotal.getText()+"\n");
-			imprimir();
-			
-		}catch(Exception fd) {
-			JOptionPane.showMessageDialog(this, "Ingresó dni incorrecto");
-		}
-		}
+	    clase1 ess = tie.buscar(readcode());
+	    if (txtprodu.getText().isBlank()) {
+	        JOptionPane.showMessageDialog(this, "Por favor ingrese código de producto y cantidad a adquirir");
+	    } else {
+	        try {
+	            String tam = txtdni.getText();
+	            if (tam.length() != 8) {
+	                JOptionPane.showMessageDialog(this, "El número de DNI debe contener 8 dígitos");
+	                return;
+	            }
+	            int dni = Integer.parseInt(txtdni.getText());
+
+	            int cantidadAdquirida = cant();
+	            int stockActual = ess.getStockactual();
+	            if (cantidadAdquirida > stockActual) {
+	                JOptionPane.showMessageDialog(this, "Cantidad adquirida excede el stock disponible");
+	                return;
+	            }
+	            int nuevoStock = stockActual - cantidadAdquirida;
+	            ess.setStockactual(nuevoStock);
+
+	            txtS.setText("");
+	            imprimir(" Código de producto: " + ess.getCodigo() + "\n");
+	            imprimir("Producto: " + ess.getProducto() + "\n");
+	            imprimir("Cantidad adquirida: " + cantidadAdquirida + "\n");
+	            imprimir("DNI: " + txtdni.getText() + "\n");
+	            imprimir("Stock antes: " + stockActual + "\n");
+	            imprimir("Stock restante: " + nuevoStock + "\n");
+	            imprimir("Proveedor: " + ess.getProveedor() + "\n");
+	            imprimir("Precio unitario: " + ess.getPreciouni() + "\n");
+	            imprimir("Total a pagar: " + txttotal.getText() + "\n");
+	            imprimir();
+
+	            guardarHistorial(
+	                "Código de producto: " + ess.getCodigo() +
+	                ", Producto: " + ess.getProducto() +
+	                ", Cantidad adquirida: " + cantidadAdquirida +
+	                ", DNI: " + dni +
+	                ", Stock antes: " + stockActual +
+	                ", Stock restante: " + nuevoStock +
+	                ", Proveedor: " + ess.getProveedor() +
+	                ", Precio unitario: " + ess.getPreciouni() +
+	                ", Total a pagar: " + txttotal.getText()
+	            );
+
+	        } catch (Exception fd) {
+	            JOptionPane.showMessageDialog(this, "Ingresó DNI incorrecto");
+	        }
+	    }
+	}
+
+	private void guardarHistorial(String texto) {
+	    try (BufferedWriter bw = new BufferedWriter(new FileWriter("historial_stock.txt", true))) {
+	        bw.write(texto);
+	        bw.newLine();
+	    } catch (IOException ex) {
+	        JOptionPane.showMessageDialog(this, "Error al guardar historial: " + ex.getMessage());
+	    }
 		
 	}
 	public void imprimir() {
@@ -501,7 +524,7 @@ public class interfaz extends JFrame implements ActionListener {
 		txtS.append(g);
 	}
 	protected void do_btnRegistrarNuevoStock_actionPerformed(ActionEvent e) {
-		guia_remisión bol=new guia_remisión();
+		gui_remision bol=new gui_remision();
 		bol.setVisible(true);
 	}
 }
