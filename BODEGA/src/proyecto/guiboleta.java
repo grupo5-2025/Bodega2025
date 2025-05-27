@@ -5,12 +5,23 @@ import java.awt.FlowLayout;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+
+import Clases.Arreglo_Cliente;
+import Clases.Cliente;
+import Clases.Producto;
+
 import javax.swing.JLabel;
 import java.awt.Font;
 import javax.swing.JScrollPane;
 import java.awt.TextArea;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Random;
+
 import javax.swing.JTextField;
 import javax.swing.Box;
 import java.awt.Panel;
@@ -23,33 +34,19 @@ public class guiboleta extends JDialog {
 	private final JPanel contentPanel = new JPanel();
 	private JLabel lblNewLabel;
 	private JLabel lblBoletaDeVenta;
-	private JTextField textField;
+	private JTextField txtid;
 	private JLabel lblNewLabel_1;
-	private JTextField textField_1;
+	private JTextField txtfecha;
 	private JLabel lblNewLabel_2;
-	private JTextField textField_2;
+	private JTextField txtdni;
 	private JLabel lblNewLabel_3;
 	private Panel panel;
 	private JScrollPane scrollPane;
 	private JTextArea txtS;
+	private JTextArea txtS_1;
 
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		try {
-			guiboleta dialog = new guiboleta();
-			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-			dialog.setVisible(true);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
 
-	/**
-	 * Create the dialog.
-	 */
-	public guiboleta() {
+	public guiboleta(JFrame parent, String dni, String detalles) {
 		setModal(true);
 		setTitle("BOLETA DE VENTA");
 		setBounds(100, 100, 434, 463);
@@ -58,29 +55,45 @@ public class guiboleta extends JDialog {
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(null);
 		{
-			textField_1 = new JTextField();
-			textField_1.setEditable(false);
-			textField_1.setBounds(106, 100, 128, 20);
-			contentPanel.add(textField_1);
-			textField_1.setColumns(10);
+			txtfecha = new JTextField();
+			txtfecha.setEditable(false);
+			txtfecha.setBounds(116, 101, 112, 20);
+			contentPanel.add(txtfecha);
+			LocalDateTime now=LocalDateTime.now();
+			DateTimeFormatter actual = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+			String horaactual=now.format(actual);
+			txtfecha.setText(" "+horaactual);
+			txtfecha.setColumns(10);
 		}
 		{
-			lblNewLabel_2 = new JLabel("Fecha de Emision:");
-			lblNewLabel_2.setBounds(10, 103, 86, 14);
-			contentPanel.add(lblNewLabel_2);
+			lblNewLabel_2 = new JLabel("Fecha de Emisión:");
+			lblNewLabel_2.setBounds(10, 103, 112, 14);
+			contentPanel.add(lblNewLabel_2); 
 		}
 		{
-			textField_2 = new JTextField();
-			textField_2.setEditable(false);
-			textField_2.setBounds(36, 125, 86, 20);
-			contentPanel.add(textField_2);
-			textField_2.setColumns(10);
+			txtdni = new JTextField(dni);
+			txtdni.setEditable(false);
+			txtdni.setBounds(36, 125, 86, 20);
+			contentPanel.add(txtdni);
+			txtdni.setColumns(10);
 		}
+		txtS = new JTextArea();
+		txtS.setEditable(false);
+		txtS.setText(detalles);
+		scrollPane = new JScrollPane(txtS);
+		scrollPane.setBounds(10, 170, 400, 200);
+		contentPanel.add(scrollPane);
 		{
 			lblNewLabel_3 = new JLabel("DNI:");
 			lblNewLabel_3.setBounds(10, 128, 46, 14);
 			contentPanel.add(lblNewLabel_3);
 		}
+			txtS_1 = new JTextArea();
+			txtS_1.setEditable(false);
+			txtS_1.setText(detalles);
+			scrollPane = new JScrollPane(txtS_1);
+			scrollPane.setBounds(10, 170, 400, 200);
+			contentPanel.add(scrollPane);
 		{
 			panel = new Panel();
 			panel.setBounds(131, 10, 172, 73);
@@ -101,23 +114,13 @@ public class guiboleta extends JDialog {
 				lblNewLabel_1.setFont(new Font("Tahoma", Font.PLAIN, 14));
 			}
 			{
-				textField = new JTextField();
-				panel.add(textField);
-				textField.setEditable(false);
-				textField.setColumns(10);
-			}
-		}
-		{
-			scrollPane = new JScrollPane();
-			scrollPane.setBounds(10, 152, 401, 264);
-			contentPanel.add(scrollPane);
-			{
-				txtS = new JTextArea();
-				txtS.setEditable(false);
-				txtS.setTabSize(10);
-				scrollPane.setViewportView(txtS);
-				txtS.append("   "+"Producto\tCantidad\tPrecio unitario\tImporte total");
-
+				txtid = new JTextField();
+				panel.add(txtid);
+				Random random = new Random();
+		        int numeroAleatorio = random.nextInt(900) + 100;
+		        txtid.setText(""+numeroAleatorio);
+				txtid.setEditable(false);
+				txtid.setColumns(10);
 			}
 		}
 	}
